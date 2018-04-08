@@ -82,6 +82,7 @@
     (setq command-line (enscript-print-shell-concat
                         command-line (concat "--font="
                                              enscript-print-font-name
+                                             "@"
                                              enscript-print-font-size)))
     (if enscript-print-landscape-p
         (setq command-line (enscript-print-shell-concat
