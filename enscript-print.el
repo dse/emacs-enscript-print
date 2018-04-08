@@ -34,23 +34,45 @@
   :tag "Print The Header?"
   :type '(boolean))
 
-(defcustom enscript-print-footer-p t
-  "Print using the enscript footer."
-  :group 'enscript-print
-  :tag "Print The Footer?"
-  :type '(boolean))
+(defcustom enscript-print-font-name nil
+  "The PostScript font name to use when printing.
 
-(defcustom enscript-print-font-name "Courier"
-  "The PostScript font name to use when printing."
+If value is nil, either \"Courier\" or whatever is specified in
+~/.enscriptrc is used."
   :group 'enscript-print
   :tag "Font Name"
-  :type '(string))
+  :type '(choice (const :tags "Use Enscript's default" nil)
+                 (string :tags "Use Courier" "Courier")
+                 (string :tags "Custom Font")))
 
-(defcustom enscript-print-font-size 10
-  "The PostScript font size (in units of 1/72 inch) to use when printing."
+(defcustom enscript-print-font-size nil
+  "The PostScript font size (in units of 1/72 inch) to use when printing.
+
+If value is nil, either 10 points or whatever is specified in
+~/.enscriptrc is used.
+
+If landscape multi-column printing is done, the default font size
+changes from 10 points to 7 points.
+
+If a value for `enscript-print-font-height' is specified, this
+specifies the font's width and `enscript-print-font-height'
+specifies the font's height.  Otherwise, this specifies both the
+font's width and height."
   :group 'enscript-print
   :tag "Font Size"
-  :type '(integer))
+  :type '(choice (const :tags "Use Enscript's default" nil)
+                 (number :tags "10pt" 10)
+                 (number :tags "7pt" 7)
+                 (number :tags "Custom font size in points")))
+
+(defcustom enscript-print-font-height nil
+  "The PostScript font height (in units of 1/72 inch) to use when printing.
+
+If the value is nil, maintain the font's original aspect ratio."
+  :group 'enscript-print
+  :tag "Font Height"
+  :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
+                 (number :tags "Custom font height in points")))
 
 (defcustom enscript-print-landscape-p nil
   "Whether to print in landscape orientation."
@@ -64,33 +86,62 @@
   :tag "Number of Columns"
   :type '(integer))
 
+(defcustom enscript-print-highlight-bars nil
+  "Use highlight bars."
+  :group 'enscript-print
+  :tag "Highlight Bars?"
+  :type '(choice (const :tags "Off" nil)
+                 (const :tags "On" t)
+                 (integer :tags "Height of highlight bars in lines")))
+
+(defcustom enscript-print-highlight-bar-gray-level 0.1
+  "Highlight bar gray level (0 to 1)."
+  :group 'enscript-print
+  :tag "Highlight Bar Gray Level"
+  :type '(number))
+
 (defun enscript-print-shell-concat (command-line &rest arguments)
   "Take COMMAND-LINE; append ARGUMENTS; return new command line."
   (let ((command-line command-line))
     (dolist (argument arguments command-line)
-      (setq command-line (concat command-line " " (shell-quote-argument argument))))))
+      (if argument
+          (setq command-line (concat command-line " " (shell-quote-argument argument)))))))
 
 (defun enscript-print-command-line ()
   "Return the command line for enscript printing."
   (let ((command-line "enscript"))
     (if (not enscript-print-header-p)
         (setq command-line (enscript-print-shell-concat
-                            command-line "--no-header")))
-    (if (not enscript-print-footer-p)
+                            command-line
+                            "--no-header")))
+    (if (or enscript-print-font-name enscript-print-font-size)
         (setq command-line (enscript-print-shell-concat
-                            command-line "--no-footer")))
-    (setq command-line (enscript-print-shell-concat
-                        command-line (concat "--font="
-                                             enscript-print-font-name
-                                             "@"
-                                             enscript-print-font-size)))
+                            command-line
+                            (concat "--font="
+                                    (or enscript-print-font-name "Courier")
+                                    (if enscript-print-font-size
+                                        (concat "@" (number-to-string enscript-print-font-size)
+                                                (if enscript-print-font-height
+                                                    (concat "/" (number-to-string enscript-print-font-height)))))))))
     (if enscript-print-landscape-p
         (setq command-line (enscript-print-shell-concat
-                            command-line "--landscape")))
+                            command-line
+                            "--landscape")))
     (if enscript-print-columns
         (setq command-line (enscript-print-shell-concat
-                            command-line (concat "--columns="
-                                                 enscript-print-columns))))
+                            command-line
+                            (concat "--columns=" (number-to-string enscript-print-columns)))))
+    (if enscript-print-highlight-bars
+        (if (numberp enscript-print-highlight-bars)
+            (setq command-line (enscript-print-shell-concat
+                                command-line
+                                (format "--highlight-bars=%d" enscript-print-highlight-bars)
+                                (format "--highlight-bar-gray=%f" enscript-print-highlight-bar-gray-level)))
+          (setq command-line (enscript-print-shell-concat
+                              command-line
+                              "--highlight-bars"
+                              (format "--highlight-bar-gray=%f" enscript-print-highlight-bar-gray-level)))))
+
     command-line))
 
 ;;;###autoload
