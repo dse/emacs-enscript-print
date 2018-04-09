@@ -180,7 +180,7 @@ If the value is nil, maintain the font's original aspect ratio."
           (setq command-line (concat command-line " " (shell-quote-argument argument)))))))
 
 (defun enscript-print/point-before-local-variables-line ()
-  "Return location of last non-blank line before \"Local Variables:\" line.
+  "Return location after last non-blank line before \"Local Variables:\" line.
 
 Return nil if \"Local Variables:\" line is not found."
   ;; partly based on files-x.el
