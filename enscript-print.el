@@ -182,16 +182,18 @@ If the value is nil, maintain the font's original aspect ratio."
   "Return location of last non-blank line before \"Local Variables:\" line.
 
 Return nil if \"Local Variables:\" line is not found."
-  ;; based on files-x.el
+  ;; partly based on files-x.el
   (save-excursion
     (goto-char (point-max))
     (search-backward "\n\^L" (max (- (point-max) 3000) (point-min)) 'noerror)
     (when (let ((case-fold-search t))
             (search-forward (concat "Local Variables" ":") nil t))
-      (forward-line 0) ;beginning of line, ignoring field boundaries
-      (when (search-backward-regexp "[^[:space:]\r\n]" nil 'noerror) ;point now on last non-whitespace char
-        (forward-line 1)                ;beginning of next line
-        (point)))))                     ;return it
+      (forward-line 0) ;go to beginning of line, ignoring field boundaries
+      (when (search-backward-regexp "[^[:space:]\r\n]" nil 'noerror)
+        ;; at this point, point is now on last non-whitespace
+        ;; character.
+        (forward-line 1)                ;go to beginning of next line
+        (point)))))                     ;return location
 
 (defun enscript-print/point-max ()
   "Return end of buffer for enscript printing purposes.
