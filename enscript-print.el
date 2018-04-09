@@ -170,14 +170,17 @@ If the value is nil, maintain the font's original aspect ratio."
   (cond
    ((atom LIST) (list LIST))
    ((null (cdr LIST)) (enscript-print/flatten (car LIST)))
-   (t (append (enscript-print/flatten (car LIST)) (enscript-print/flatten (cdr LIST))))))
+   (t (append (enscript-print/flatten (car LIST))
+              (enscript-print/flatten (cdr LIST))))))
 
 (defun enscript-print/shell-concat (command-line &rest arguments)
   "Take COMMAND-LINE; append ARGUMENTS; return new command line."
   (let ((command-line command-line))
     (dolist (argument (enscript-print/flatten arguments) command-line)
       (if argument
-          (setq command-line (concat command-line " " (shell-quote-argument argument)))))))
+          (setq command-line
+                (concat command-line " "
+                        (shell-quote-argument argument)))))))
 
 (defun enscript-print/point-before-local-variables-line ()
   "Return location after last non-blank line before \"Local Variables:\" line.
@@ -244,10 +247,13 @@ The font spec is used as the value of the `--font' and
        (format "--columns=%d" enscript-print-columns))
    (if enscript-print-highlight-bars
        (if (numberp enscript-print-highlight-bars)
-           (list (format "--highlight-bars=%d" enscript-print-highlight-bars)
-                 (format "--highlight-bar-gray=%g" enscript-print-highlight-bar-gray-level))
+           (list (format "--highlight-bars=%d"
+                         enscript-print-highlight-bars)
+                 (format "--highlight-bar-gray=%g"
+                         enscript-print-highlight-bar-gray-level))
          (list "--highlight-bars"
-               (format "--highlight-bar-gray=%g" enscript-print-highlight-bar-gray-level))))
+               (format "--highlight-bar-gray=%g"
+                       enscript-print-highlight-bar-gray-level))))
    (if enscript-print-number-of-copies
        (format "--copies=%d" enscript-print-number-of-copies))
    (if enscript-print-truncate-lines "--truncate-lines")
@@ -259,13 +265,15 @@ The font spec is used as the value of the `--font' and
 (defun enscript-print-buffer ()
   "Print the contents of the buffer using enscript."
   (interactive)
-  (shell-command-on-region (point-min) (enscript-print/point-max) (enscript-print-command-line)))
+  (shell-command-on-region (point-min) (enscript-print/point-max)
+                           (enscript-print-command-line)))
 
 ;;;###autoload
 (defun enscript-print-region ()
   "Print the contents of the region using enscript."
   (interactive)
-  (shell-command-on-region (point) (mark) (enscript-print-command-line)))
+  (shell-command-on-region (point) (mark)
+                           (enscript-print-command-line)))
 
 (provide 'enscript-print)
 ;;; enscript-print.el ends here
