@@ -24,6 +24,7 @@
 ;; `enscript-print-region', which are fancy wrappers that pipe the
 ;; appropriate contents to GNU Enscript.  There are plenty of
 ;; customizable options in the `enscript-print' customize group.
+;; There will be more.
 
 ;;; Code:
 
@@ -165,7 +166,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; Stolen from https://stackoverflow.com/questions/969067/name-of-this-function-in-built-in-emacs-lisp-library
 (defun enscript-print/flatten (LIST)
-  "Flattens LIST."
+  "Return a new flattened list from LIST."
   (cond
    ((atom LIST) (list LIST))
    ((null (cdr LIST)) (enscript-print/flatten (car LIST)))
