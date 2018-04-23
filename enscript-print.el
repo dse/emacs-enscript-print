@@ -66,8 +66,8 @@
   "Output media."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x) (stringp x)))
-  :custom '(choice (const :tags "Use Enscript's default" nil)
-                   (string :tags "Media name (enscript --list-media)" "A4")))
+  :type '(choice (const :tags "Use Enscript's default" nil)
+                 (string :tags "Media name (enscript --list-media)" "A4")))
 
 (defcustom enscript-print-font-name nil
   "The PostScript font name to use when printing.
