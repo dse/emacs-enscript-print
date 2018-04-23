@@ -14,3 +14,19 @@ will be more.
 This should work with [GNU Emacs](https://www.gnu.org/software/emacs/)
 25.2 and up.  May work with earlier versions, but I can make no
 guarantees on this.
+
+## Alternatives
+
+- [enscript.el](https://www.emacswiki.org/emacs/EnscriptPrint)
+  from the [Emacs Wiki](https://www.emacswiki.org/emacs/SiteMap).
+
+- The
+  [`ps-print`](https://www.gnu.org/software/emacs/manual/html_node/emacs/PostScript.html#PostScript)
+  package that comes with Emacs for PostScript printing.  Implements
+  `ps-print-buffer`, `ps-print-region`, and other functions.
+
+
+- The
+  [`lpr`](https://www.gnu.org/software/emacs/manual/html_node/emacs/Printing.html)
+  package that comes with Emacs.  Implements the `print-buffer`,
+  `lpr-buffer`, `print-region`, and `lpr-region` functions.
