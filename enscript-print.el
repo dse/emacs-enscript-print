@@ -104,7 +104,8 @@ specifies the font's height.  Otherwise, this specifies both the
 font's width and height."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (numberp x)))
+                          (and (numberp x)
+                               (>= x 0))))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "10pt" 10)
                  (const :tags "7pt" 7)
@@ -117,7 +118,8 @@ font's width and height."
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (numberp x)))
+                          (and (numberp x)
+                               (>= x 0))))
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
@@ -150,7 +152,8 @@ specifies the font's height.  Otherwise, this specifies both the
 font's width and height."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (numberp x)))
+                          (and (numberp x)
+                               (>= x 0))))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "10pt" 10)
                  (const :tags "7pt" 7)
@@ -163,7 +166,8 @@ font's width and height."
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (numberp x)))
+                          (and (numberp x)
+                               (>= x 0))))
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
@@ -178,7 +182,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-columns 1
   "Specify how many columns each page has."
   :group 'enscript-print
-  :safe #'integerp
+  :safe #'(lambda (x) (and (integerp x)
+                           (>= x 1)))
   :type '(integer))
 
 ;; --highlight-bars[=<num>]
@@ -186,7 +191,8 @@ If the value is nil, maintain the font's original aspect ratio."
   "Print highlight bars, and optionally specify how high they are in lines."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (numberp x)))
+                          (and (integerp x)
+                               (>= x 1))))
   :type '(choice (const :tags "Off" nil)
                  (const :tags "On" t)
                  (integer :tags "Height of highlight bars in lines" 2)))
@@ -207,7 +213,8 @@ If the value is nil, maintain the font's original aspect ratio."
   "Specify the baseline skip in PostScript points."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (numberp x)))
+                          (and (numberp x)
+                               (> x 0))))
   :type '(choice (const :tags "Default" nil)
                  (number :tags "Number of PostScript points" 1)))
 
@@ -222,7 +229,8 @@ If the value is nil, maintain the font's original aspect ratio."
   "Set the tabulator size."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (integerp x)))
+                          (and (integerp x)
+                               (>= x 1))))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of characters" 8)))
 
@@ -231,7 +239,8 @@ If the value is nil, maintain the font's original aspect ratio."
   "Tell what enscript is doing."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (integerp x)))
+                          (and (integerp x)
+                               (>= x 0))))
   :type '(choice (const :tags "No" nil)
                  (integer :tags "Verbose level (1 or more)" 1)))
 
@@ -240,7 +249,8 @@ If the value is nil, maintain the font's original aspect ratio."
   "Number of copies to print."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
-                          (integerp x)))
+                          (and (integerp x)
+                               (>= x 0))))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of copies" 2)))
 
