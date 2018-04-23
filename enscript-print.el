@@ -170,15 +170,26 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(boolean))
 
 (defcustom enscript-print-printer-name nil
-  "Printer name to send documents to."
+  "Printer name to send documents to for enscript-print.
+
+Leave nil to use the value of `printer-name'."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x) (stringp x)))
-  :type '(choice (const :tags "Default printer" nil)
-                 (string :tags "Printer name" "printer")))
+  :type '(choice (const :tags "Use `printer-name' or default printer." nil)
+                 (string :tags "Specify a printer name" "printer")))
 
 (defcustom enscript-print-line-numbers nil
   "Print line numbers?"
   :type '(boolean))
+
+(defun enscript-print-printer-name ()
+  "Return the default printer name used for enscript-print.
+
+Returns the value of `enscript-print-printer-name' if non-nil.
+Otherwise returns the value of `printer-name'.
+`printer-name'."
+  (or enscript-print-printer-name
+      printer-name))
 
 ;; Stolen from https://stackoverflow.com/questions/969067/name-of-this-function-in-built-in-emacs-lisp-library
 (defun enscript-print/flatten (LIST)
@@ -273,8 +284,9 @@ The font spec is used as the value of the `--font' and
    (if enscript-print-number-of-copies
        (format "--copies=%d" enscript-print-number-of-copies))
    (if enscript-print-truncate-lines "--truncate-lines")
-   (if enscript-print-printer-name
-       (format "--printer=%s" enscript-print-printer-name))
+   (let ((the-printer-name (enscript-print-printer-name)))
+     (if the-printer-name
+         (format "--printer=%s" the-printer-name)))
    (if enscript-print-line-numbers "--line-numbers")))
 
 ;;;###autoload
