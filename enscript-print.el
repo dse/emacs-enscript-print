@@ -70,7 +70,8 @@
 (defcustom enscript-print-media nil
   "Select an output media (paper size)."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (stringp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (stringp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (string :tags "Media name (enscript --list-media)" "A4")))
 
@@ -81,7 +82,8 @@
 If value is nil, either \"Courier\" or whatever is specified in
 ~/.enscriptrc is used."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (stringp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (stringp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "Use Courier" "Courier")
                  (string :tags "Custom Font" "Courier")))
@@ -101,7 +103,8 @@ specifies the font's width and `enscript-print-font-height'
 specifies the font's height.  Otherwise, this specifies both the
 font's width and height."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "10pt" 10)
                  (const :tags "7pt" 7)
@@ -113,7 +116,8 @@ font's width and height."
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
@@ -124,7 +128,8 @@ If the value is nil, maintain the font's original aspect ratio."
 If value is nil, either \"Courier\" or whatever is specified in
 ~/.enscriptrc is used."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (stringp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (stringp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "Use Courier" "Courier")
                  (string :tags "Custom Font" "Courier")))
@@ -144,7 +149,8 @@ specifies the font's width and `enscript-print-header-font-height'
 specifies the font's height.  Otherwise, this specifies both the
 font's width and height."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "10pt" 10)
                  (const :tags "7pt" 7)
@@ -156,7 +162,8 @@ font's width and height."
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
@@ -178,7 +185,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-highlight-bars nil
   "Print highlight bars, and optionally specify how high they are in lines."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Off" nil)
                  (const :tags "On" t)
                  (integer :tags "Height of highlight bars in lines" 2)))
@@ -231,7 +239,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-number-of-copies nil
   "Number of copies to print."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (integerp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (integerp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of copies" 2)))
 
@@ -239,7 +248,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-left-margin nil
   "Left page marginal."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
@@ -247,7 +257,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-right-margin nil
   "Right page marginal."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
@@ -255,7 +266,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-top-margin nil
   "Top page marginal."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
@@ -263,7 +275,8 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-bottom-margin nil
   "Bottom page marginal."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
@@ -293,14 +306,16 @@ If the value is nil, maintain the font's original aspect ratio."
 
 Leave nil to use the value of `printer-name'."
   :group 'enscript-print
-  :safe #'(lambda (x) (or (not x) (stringp x)))
+  :safe #'(lambda (x) (or (not x)
+                          (stringp x)))
   :type '(choice (const :tags "Use `printer-name' or default printer." nil)
                  (string :tags "Specify a printer name" "printer")))
 
 ;; --line-numbers[=<start-line>]
 (defcustom enscript-print-line-numbers nil
   "Precede each line with its line number."
-  :safe #'(lambda (x) (or (booleanp x) (integerp x)))
+  :safe #'(lambda (x) (or (booleanp x)
+                          (integerp x)))
   :type '(choice (const :tags "No (default)" nil)
                  (const :tags "Yes" 1)
                  (integer :tags "Specify the line number of the first line." 1)))
