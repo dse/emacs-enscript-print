@@ -169,6 +169,18 @@ If the value is nil, maintain the font's original aspect ratio."
   :safe #'booleanp
   :type '(boolean))
 
+(defcustom enscript-print-mark-wrapped-lines nil
+  "Mark wrapped lines."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x)
+                          (eq x 'plus)
+                          (eq x 'box)
+                          (eq x 'arrow)))
+  :type '(choice (const :tags "do not print (default)"                    nil)
+                 (const :tags "plus (+) sign to end of each wrapped line" 'plus)
+                 (const :tags "black box to end of each wrapped line"     'box)
+                 (const :tags "small arrow to end of each wrapped line"   'arrow)))
+
 (defcustom enscript-print-printer-name nil
   "Printer name to send documents to for enscript-print.
 
@@ -285,6 +297,13 @@ The font spec is used as the value of the `--font' and
    (if enscript-print-number-of-copies
        (format "--copies=%d" enscript-print-number-of-copies))
    (if enscript-print-truncate-lines "--truncate-lines")
+   (if enscript-print-mark-wrapped-lines
+       (cond ((eq enscript-print-mark-wrapped-lines 'plus)
+              "--mark-wrapped-lines=plus")
+             ((eq enscript-print-mark-wrapped-lines 'box)
+              "--mark-wrapped-lines=box")
+             ((eq enscript-print-mark-wrapped-lines 'arrow)
+              "--mark-wrapped-lines=arrow")))
    (let ((the-printer-name (enscript-print-printer-name)))
      (if the-printer-name
          (format "--printer=%s" the-printer-name)))
