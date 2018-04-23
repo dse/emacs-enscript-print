@@ -180,6 +180,7 @@ Leave nil to use the value of `printer-name'."
 
 (defcustom enscript-print-line-numbers nil
   "Print line numbers?"
+  :safe #'booleanp
   :type '(boolean))
 
 (defun enscript-print-printer-name ()
