@@ -198,7 +198,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (integerp x)))
-  :type '(custom (const :tags "Default" nil)
+  :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of characters" 8)))
 
 (defcustom enscript-print-verbose-level nil
@@ -206,7 +206,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (integerp x)))
-  :type '(custom (const :tags "No" nil)
+  :type '(choice (const :tags "No" nil)
                  (integer :tags "Verbose level (1 or more)" 1)))
 
 (defcustom enscript-print-number-of-copies nil
