@@ -44,6 +44,31 @@
   :safe #'booleanp
   :type '(boolean))
 
+(defcustom enscript-print-silent nil
+  "Suppress all output except for fatal error messages."
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
+
+(defcustom enscript-print-borders nil
+  "Print borders."
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
+
+(defcustom enscript-print-enable-page-prefeed nil
+  "Enable page prefeed."
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
+
+(defcustom enscript-print-media nil
+  "Output media."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (stringp x)))
+  :custom '(choice (const :tags "Use Enscript's default" nil)
+                   (string :tags "Media name (enscript --list-media)" "A4")))
+
 (defcustom enscript-print-font-name nil
   "The PostScript font name to use when printing.
 
@@ -144,11 +169,23 @@ If the value is nil, maintain the font's original aspect ratio."
                  (const :tags "On" t)
                  (integer :tags "Height of highlight bars in lines" 2)))
 
-(defcustom enscript-print-highlight-bar-gray-level 0.9
+(defcustom enscript-print-highlight-bars-gray-level 0.9
   "Highlight bar gray level (0 is black; 1 is white)."
   :group 'enscript-print
   :safe #'numberp
   :type '(number))
+
+(define-obsolete-variable-alias
+  'enscript-print-highlight-bar-gray-level
+  'enscript-print-highlight-bars-gray-level "25.1")
+
+(defcustom enscript-print-baseline-skip nil
+  "Specify the baseline skip in PostScript points."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x)
+                          (numberp x)))
+  :type '(choice (const :tags "Default" nil)
+                 (number :tags "Number of PostScript points" 1)))
 
 (defcustom enscript-print-exclude-emacs-local-variables nil
   "Exclude Emacs \"Local Variables\" sections."
@@ -156,12 +193,56 @@ If the value is nil, maintain the font's original aspect ratio."
   :safe #'booleanp
   :type '(boolean))
 
+(defcustom enscript-print-tab-size nil
+  "Set the tabulator size."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x)
+                          (integerp x)))
+  :type '(custom (const :tags "Default" nil)
+                 (integer :tags "Number of characters" 8)))
+
+(defcustom enscript-print-verbose-level nil
+  "Tell what enscript is doing."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x)
+                          (integerp x)))
+  :type '(custom (const :tags "No" nil)
+                 (integer :tags "Verbose level (1 or more)" 1)))
+
 (defcustom enscript-print-number-of-copies nil
   "Number of copies to print."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x) (integerp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of copies" 2)))
+
+(defcustom enscript-print-left-margin nil
+  "Left page marginal."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :type '(choice (const :tags "Default" nil)
+                 (integer :tags "Number of PostScript points" 10)))
+
+(defcustom enscript-print-right-margin nil
+  "Right page marginal."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :type '(choice (const :tags "Default" nil)
+                 (integer :tags "Number of PostScript points" 10)))
+
+(defcustom enscript-print-top-margin nil
+  "Top page marginal."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :type '(choice (const :tags "Default" nil)
+                 (integer :tags "Number of PostScript points" 10)))
+
+(defcustom enscript-print-bottom-margin nil
+  "Bottom page marginal."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
+  :type '(choice (const :tags "Default" nil)
+                 (integer :tags "Number of PostScript points" 10)))
 
 (defcustom enscript-print-truncate-lines nil
   "Cut lines that are too long for the page."
@@ -192,8 +273,53 @@ Leave nil to use the value of `printer-name'."
 
 (defcustom enscript-print-line-numbers nil
   "Print line numbers?"
+  :safe #'(lambda (x) (or (booleanp x) (integerp x)))
+  :type '(choice (const :tags "No (default)" nil)
+                 (const :tags "Yes" 1)
+                 (integer :tags "Start with this line number" 1)))
+
+(defcustom enscript-print-no-job-header nil
+  "Pass instructions to hide the job header to the print spooler."
+  :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
+
+(defcustom enscript-print-indent nil
+  "Indent each line this many characters (or `enscript-print-indent-units')."
+  :group 'enscript-print
+  :safe #'numberp
+  :type '(choice (const :tags "No indentation (default)" nil)
+                 (number :tags "Number of characters or units" 4)))
+
+(defcustom enscript-print-indent-units nil
+  "Units to use instead of characters for `enscript-print-indent'."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x)
+                          (eq x 'centimeters)
+                          (eq x 'inches)
+                          (eq x 'points)))
+  :type '(choice (const :tags "characters (default)" nil)
+                 (const :tags "centimeters" 'centimeters)
+                 (const :tags "inches" 'inches)
+                 (const :tags "PostScript points" 'points)))
+
+(defcustom enscript-print-missing-characters nil
+  "Show missing characters in Enscript output?"
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
+
+(defcustom enscript-print-non-printable-format nil
+  "Specify how non-printable characterss are printed."
+  :group 'enscript-print
+  :safe #'(lambda (x) (or (not x)
+                          (eq x 'caret)
+                          (eq x 'questionmark)
+                          (eq x 'space)))
+  :type '(choice (const :tags "Octal (default)" nil)
+                 (const :tags "Caret" 'caret)
+                 (const :tags "Question mark" 'questionmark)
+                 (const :tags "Space" 'space)))
 
 (defun enscript-print-printer-name ()
   "Return the default printer name used for enscript-print.
@@ -272,6 +398,9 @@ The font spec is used as the value of the `--font' and
   (enscript-print/shell-concat
    enscript-print-executable
    (if (not enscript-print-header) "--no-header")
+   (if enscript-print-borders "--borders")
+   (if enscript-print-media (format "--media=%s" enscript-print-media))
+   (if enscript-print-enable-page-prefeed "--page-prefeed")
    (if (or enscript-print-font-name enscript-print-font-size)
        (format "--font=%s" (enscript-print/font-string
                             enscript-print-font-name
@@ -282,6 +411,21 @@ The font spec is used as the value of the `--font' and
                                    enscript-print-header-font-name
                                    enscript-print-header-font-size
                                    enscript-print-header-font-height)))
+   (if (or enscript-print-left-margin
+           enscript-print-right-margin
+           enscript-print-top-margin
+           enscript-print-bottom-margin)
+       (format "--margins=%s:%s:%s:%s"
+               (if enscript-print-left-margin   (format "%f" enscript-print-left-margin)   "")
+               (if enscript-print-right-margin  (format "%f" enscript-print-right-margin)  "")
+               (if enscript-print-top-margin    (format "%f" enscript-print-top-margin)    "")
+               (if enscript-print-bottom-margin (format "%f" enscript-print-bottom-margin) "")))
+   (if enscript-print-baseline-skip
+       (format "--baselineskip=%f" enscript-print-baseline-skip))
+   (if enscript-print-tab-size
+       (format "--tabsize=%d" enscript-print-tab-size))
+   (if enscript-print-verbose-level
+       (format "--verbose=%d" enscript-print-verbose-level))
    (if enscript-print-landscape "--landscape")
    (if enscript-print-columns
        (format "--columns=%d" enscript-print-columns))
@@ -289,11 +433,11 @@ The font spec is used as the value of the `--font' and
        (if (numberp enscript-print-highlight-bars)
            (list (format "--highlight-bars=%d"
                          enscript-print-highlight-bars)
-                 (format "--highlight-bar-gray=%g"
-                         enscript-print-highlight-bar-gray-level))
+                 (format "--highlight-bars-gray=%g"
+                         enscript-print-highlight-bars-gray-level))
          (list "--highlight-bars"
-               (format "--highlight-bar-gray=%g"
-                       enscript-print-highlight-bar-gray-level))))
+               (format "--highlight-bars-gray=%g"
+                       enscript-print-highlight-bars-gray-level))))
    (if enscript-print-number-of-copies
        (format "--copies=%d" enscript-print-number-of-copies))
    (if enscript-print-truncate-lines "--truncate-lines")
@@ -307,7 +451,32 @@ The font spec is used as the value of the `--font' and
    (let ((the-printer-name (enscript-print-printer-name)))
      (if the-printer-name
          (format "--printer=%s" the-printer-name)))
-   (if enscript-print-line-numbers "--line-numbers")))
+   (if enscript-print-no-job-header "--no-job-header")
+   (if enscript-print-indent
+       (cond ((not enscript-print-indent-units)
+              (format "--indent=%f" enscript-print-indent))
+             ((eq enscript-print-indent-units 'centimeters)
+              (format "--indent=%fc" enscript-print-indent))
+             ((eq enscript-print-indent-units 'inches)
+              (format "--indent=%fi" enscript-print-indent))
+             ((eq enscript-print-indent-units 'points)
+              (format "--indent=%fp" enscript-print-indent))))
+   (if enscript-print-missing-characters "--missing-characters")
+   (if enscript-print-non-printable-format
+       (cond ((not enscript-print-non-printable-format)
+              "--non-printable-format=octal")
+             ((eq enscript-print-non-printable-format 'caret)
+              "--non-printable-format=caret")
+             ((eq enscript-print-non-printable-format 'questionmark)
+              "--non-printable-format=questionmark")
+             ((eq enscript-print-non-printable-format 'space)
+              "--non-printable-format=space")))
+   (if enscript-print-silent "--silent")
+   (if enscript-print-line-numbers
+       (cond ((booleanp enscript-print-line-numbers)
+              "--line-numbers")
+             ((integerp enscript-print-line-numbers)
+              (format "--line-numbers=%d" enscript-print-line-numbers))))))
 
 ;;;###autoload
 (defun enscript-print-buffer ()
