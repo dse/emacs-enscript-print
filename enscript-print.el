@@ -35,11 +35,13 @@
 (defcustom enscript-print-executable "enscript"
   "Name of GNU Enscript executable."
   :group 'enscript-print
+  :safe #'stringp
   :type '(string))
 
 (defcustom enscript-print-header t
   "Print using the enscript header."
   :group 'enscript-print
+  :safe #'booleanp
   :type '(boolean))
 
 (defcustom enscript-print-font-name nil
@@ -48,6 +50,7 @@
 If value is nil, either \"Courier\" or whatever is specified in
 ~/.enscriptrc is used."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (stringp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "Use Courier" "Courier")
                  (string :tags "Custom Font" "Courier")))
@@ -66,6 +69,7 @@ specifies the font's width and `enscript-print-font-height'
 specifies the font's height.  Otherwise, this specifies both the
 font's width and height."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "10pt" 10)
                  (const :tags "7pt" 7)
@@ -76,6 +80,7 @@ font's width and height."
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
@@ -85,6 +90,7 @@ If the value is nil, maintain the font's original aspect ratio."
 If value is nil, either \"Courier\" or whatever is specified in
 ~/.enscriptrc is used."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (stringp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "Use Courier" "Courier")
                  (string :tags "Custom Font" "Courier")))
@@ -103,6 +109,7 @@ specifies the font's width and `enscript-print-header-font-height'
 specifies the font's height.  Otherwise, this specifies both the
 font's width and height."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (const :tags "10pt" 10)
                  (const :tags "7pt" 7)
@@ -113,22 +120,26 @@ font's width and height."
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
 (defcustom enscript-print-landscape nil
   "Whether to print in landscape orientation."
   :group 'enscript-print
+  :safe #'booleanp
   :type '(boolean))
 
 (defcustom enscript-print-columns 1
   "Number of columns to print."
   :group 'enscript-print
+  :safe #'integerp
   :type '(integer))
 
 (defcustom enscript-print-highlight-bars nil
   "Use highlight bars."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (numberp x)))
   :type '(choice (const :tags "Off" nil)
                  (const :tags "On" t)
                  (integer :tags "Height of highlight bars in lines" 2)))
@@ -136,27 +147,32 @@ If the value is nil, maintain the font's original aspect ratio."
 (defcustom enscript-print-highlight-bar-gray-level 0.9
   "Highlight bar gray level (0 is black; 1 is white)."
   :group 'enscript-print
+  :safe #'numberp
   :type '(number))
 
 (defcustom enscript-print-exclude-emacs-local-variables nil
   "Exclude Emacs \"Local Variables\" sections."
   :group 'enscript-print
+  :safe #'booleanp
   :type '(boolean))
 
 (defcustom enscript-print-number-of-copies nil
   "Number of copies to print."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (integerp x)))
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of copies" 2)))
 
 (defcustom enscript-print-truncate-lines nil
   "Cut lines that are too long for the page."
   :group 'enscript-print
+  :safe #'booleanp
   :type '(boolean))
 
 (defcustom enscript-print-printer-name nil
   "Printer name to send documents to."
   :group 'enscript-print
+  :safe #'(lambda (x) (or (not x) (stringp x)))
   :type '(choice (const :tags "Default printer" nil)
                  (string :tags "Printer name" "printer")))
 
