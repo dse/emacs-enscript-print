@@ -38,39 +38,45 @@
   :safe #'stringp
   :type '(string))
 
+;; negation of --no-header
 (defcustom enscript-print-header t
-  "Print using the enscript header."
+  "Print page headers."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --silent
 (defcustom enscript-print-silent nil
   "Suppress all output except for fatal error messages."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --borders
 (defcustom enscript-print-borders nil
-  "Print borders."
+  "Print borders around columns."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --page-prefeed
 (defcustom enscript-print-enable-page-prefeed nil
   "Enable page prefeed."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --media
 (defcustom enscript-print-media nil
-  "Output media."
+  "Select an output media (paper size)."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x) (stringp x)))
   :type '(choice (const :tags "Use Enscript's default" nil)
                  (string :tags "Media name (enscript --list-media)" "A4")))
 
+;; --font=<font>
 (defcustom enscript-print-font-name nil
-  "The PostScript font name to use when printing.
+  "Select a font for the body text.
 
 If value is nil, either \"Courier\" or whatever is specified in
 ~/.enscriptrc is used."
@@ -80,8 +86,9 @@ If value is nil, either \"Courier\" or whatever is specified in
                  (const :tags "Use Courier" "Courier")
                  (string :tags "Custom Font" "Courier")))
 
+;; --font=<font>
 (defcustom enscript-print-font-size nil
-  "The PostScript font size (in units of 1/72 inch) to use when printing.
+  "Specify a font size for the body text.
 
 If value is nil, either 10 points or whatever is specified in
 ~/.enscriptrc is used.
@@ -100,8 +107,9 @@ font's width and height."
                  (const :tags "7pt" 7)
                  (number :tags "Custom font size in points" 10)))
 
+;; --font=<font>
 (defcustom enscript-print-font-height nil
-  "The PostScript font height (in units of 1/72 inch) to use when printing.
+  "Specify a font height for the body text.
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
@@ -109,8 +117,9 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
+;; --header-font=<font>
 (defcustom enscript-print-header-font-name nil
-  "The PostScript font name to use when printing the header.
+  "Select a font for the header.
 
 If value is nil, either \"Courier\" or whatever is specified in
 ~/.enscriptrc is used."
@@ -120,8 +129,9 @@ If value is nil, either \"Courier\" or whatever is specified in
                  (const :tags "Use Courier" "Courier")
                  (string :tags "Custom Font" "Courier")))
 
+;; --header-font=<font>
 (defcustom enscript-print-header-font-size nil
-  "The PostScript font size to use when printing the header.
+  "Specify a font size for the header.
 
 If value is nil, either 10 points or whatever is specified in
 ~/.enscriptrc is used.
@@ -140,8 +150,9 @@ font's width and height."
                  (const :tags "7pt" 7)
                  (number :tags "Custom font size in points" 10)))
 
+;; --header-font=<font>
 (defcustom enscript-print-header-font-height nil
-  "The PostScript font height to use when printing the header.
+  "Specify a font height for the header.
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
@@ -149,28 +160,32 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Maintain font's original aspect ratio" nil)
                  (number :tags "Custom font height in points" 10)))
 
+;; --landscape
 (defcustom enscript-print-landscape nil
-  "Whether to print in landscape orientation."
+  "Print in the landscape mode; rotate page 90 degrees."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --columns=<num>
 (defcustom enscript-print-columns 1
-  "Number of columns to print."
+  "Specify how many columns each page has."
   :group 'enscript-print
   :safe #'integerp
   :type '(integer))
 
+;; --highlight-bars[=<num>]
 (defcustom enscript-print-highlight-bars nil
-  "Use highlight bars."
+  "Print highlight bars, and optionally specify how high they are in lines."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x) (numberp x)))
   :type '(choice (const :tags "Off" nil)
                  (const :tags "On" t)
                  (integer :tags "Height of highlight bars in lines" 2)))
 
+;; --highlight-bar-gray=<gray>
 (defcustom enscript-print-highlight-bars-gray-level 0.9
-  "Highlight bar gray level (0 is black; 1 is white)."
+  "Specify gray level used in printing highlight bars (0 = black; 1 = white)."
   :group 'enscript-print
   :safe #'numberp
   :type '(number))
@@ -179,6 +194,7 @@ If the value is nil, maintain the font's original aspect ratio."
   'enscript-print-highlight-bar-gray-level
   'enscript-print-highlight-bars-gray-level "25.1")
 
+;; --baselineskip=<num>
 (defcustom enscript-print-baseline-skip nil
   "Specify the baseline skip in PostScript points."
   :group 'enscript-print
@@ -188,11 +204,12 @@ If the value is nil, maintain the font's original aspect ratio."
                  (number :tags "Number of PostScript points" 1)))
 
 (defcustom enscript-print-exclude-emacs-local-variables nil
-  "Exclude Emacs \"Local Variables\" sections."
+  "Exclude the Emacs \"Local Variables\" section at the end of the file."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --tabsize=<num>
 (defcustom enscript-print-tab-size nil
   "Set the tabulator size."
   :group 'enscript-print
@@ -201,6 +218,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of characters" 8)))
 
+;; --verbose[=<level>]
 (defcustom enscript-print-verbose-level nil
   "Tell what enscript is doing."
   :group 'enscript-print
@@ -209,6 +227,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "No" nil)
                  (integer :tags "Verbose level (1 or more)" 1)))
 
+;; --copies=<num>
 (defcustom enscript-print-number-of-copies nil
   "Number of copies to print."
   :group 'enscript-print
@@ -216,6 +235,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of copies" 2)))
 
+;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-left-margin nil
   "Left page marginal."
   :group 'enscript-print
@@ -223,6 +243,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
+;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-right-margin nil
   "Right page marginal."
   :group 'enscript-print
@@ -230,6 +251,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
+;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-top-margin nil
   "Top page marginal."
   :group 'enscript-print
@@ -237,6 +259,7 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
+;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-bottom-margin nil
   "Bottom page marginal."
   :group 'enscript-print
@@ -244,14 +267,16 @@ If the value is nil, maintain the font's original aspect ratio."
   :type '(choice (const :tags "Default" nil)
                  (integer :tags "Number of PostScript points" 10)))
 
+;; --truncate-lines
 (defcustom enscript-print-truncate-lines nil
   "Cut lines that are too long for the page."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --mark-wrapped-lines[=<style>]
 (defcustom enscript-print-mark-wrapped-lines nil
-  "Mark wrapped lines."
+  "Mark wrapped lines in output, optionally with a specified style."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (eq x 'plus)
@@ -262,8 +287,9 @@ If the value is nil, maintain the font's original aspect ratio."
                  (const :tags "black box to end of each wrapped line"     'box)
                  (const :tags "small arrow to end of each wrapped line"   'arrow)))
 
+;; --printer=<name>
 (defcustom enscript-print-printer-name nil
-  "Printer name to send documents to for enscript-print.
+  "Sppol the output to the specified printer.
 
 Leave nil to use the value of `printer-name'."
   :group 'enscript-print
@@ -271,26 +297,30 @@ Leave nil to use the value of `printer-name'."
   :type '(choice (const :tags "Use `printer-name' or default printer." nil)
                  (string :tags "Specify a printer name" "printer")))
 
+;; --line-numbers[=<start-line>]
 (defcustom enscript-print-line-numbers nil
-  "Print line numbers?"
+  "Precede each line with its line number."
   :safe #'(lambda (x) (or (booleanp x) (integerp x)))
   :type '(choice (const :tags "No (default)" nil)
                  (const :tags "Yes" 1)
-                 (integer :tags "Start with this line number" 1)))
+                 (integer :tags "Specify the line number of the first line." 1)))
 
+;; --no-job-header
 (defcustom enscript-print-no-job-header nil
-  "Pass instructions to hide the job header to the print spooler."
+  "Suppress printing of the job header page."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --indent=<indent>
 (defcustom enscript-print-indent nil
-  "Indent each line this many characters (or `enscript-print-indent-units')."
+  "Indent every line this many characters (or `enscript-print-indent-units')."
   :group 'enscript-print
   :safe #'numberp
   :type '(choice (const :tags "No indentation (default)" nil)
                  (number :tags "Number of characters or units" 4)))
 
+;; --indent=<indent>
 (defcustom enscript-print-indent-units nil
   "Units to use instead of characters for `enscript-print-indent'."
   :group 'enscript-print
@@ -303,14 +333,16 @@ Leave nil to use the value of `printer-name'."
                  (const :tags "inches" 'inches)
                  (const :tags "PostScript points" 'points)))
 
+;; --missing-characters
 (defcustom enscript-print-missing-characters nil
-  "Show missing characters in Enscript output?"
+  "Print a listing of character codes which couldn't be printed."
   :group 'enscript-print
   :safe #'booleanp
   :type '(boolean))
 
+;; --non-printable-format=<format>
 (defcustom enscript-print-non-printable-format nil
-  "Specify how non-printable characterss are printed."
+  "Specify how the non-printable characterss are printed."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (eq x 'caret)
