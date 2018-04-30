@@ -458,15 +458,20 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
-(defvar enscript-print/coding-system-for-read 'utf-8-unix)
+(defvar enscript-print/coding-system-for-read 'utf-8-unix
+  "Value for `coding-system-for-read' when piping to iconv and enscript.")
 
-(defvar enscript-print/coding-system-for-write 'utf-8-unix)
+(defvar enscript-print/coding-system-for-write 'utf-8-unix
+  "Value for `coding-system-for-write' when piping to iconv and enscript.")
 
-(defvar enscript-print/iconv-source-encoding "utf-8")
+(defvar enscript-print/iconv-source-encoding "utf-8"
+  "Encoding to pass to iconv via its `-f' option for reading.")
 
-(defvar enscript-print/iconv-destination-encoding "iso-8859-1")
+(defvar enscript-print/iconv-destination-encoding "iso-8859-1"
+  "Encoding to pass to iconv via its `-t' option for piping to enscript.")
 
-(defvar enscript-print/enscript-input-encoding "latin1")
+(defvar enscript-print/enscript-input-encoding "latin1"
+  "Encoding to pass to enscript via its `--encoding' option.")
 
 (defun enscript-print/iconv-command-line ()
   "Return the command line for running iconv for piping to enscript."
