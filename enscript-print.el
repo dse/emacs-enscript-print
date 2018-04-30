@@ -26,6 +26,9 @@
 ;; customizable options in the `enscript-print' customize group.
 ;; There will be more.
 
+;; TODO: also support recode if it is installed and iconv is not.
+;; TODO: support built-in recode/iconv?
+
 ;;; Code:
 
 (defgroup enscript-print nil
