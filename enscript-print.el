@@ -45,6 +45,14 @@
   :safe #'booleanp
   :type '(boolean))
 
+;; --escapes
+;; TODO: support --escapes=<char>
+(defcustom enscript-print-escapes nil
+  "Enable special escapes interpretation."
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
+
 ;; --silent
 (defcustom enscript-print-silent nil
   "Suppress all output except for fatal error messages."
@@ -450,10 +458,31 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
-(defun enscript-print-command-line ()
-  "Return the command line for enscript printing."
+(defvar enscript-print/coding-system-for-read 'utf-8-unix)
+
+(defvar enscript-print/coding-system-for-write 'utf-8-unix)
+
+(defvar enscript-print/iconv-source-encoding "utf-8")
+
+(defvar enscript-print/iconv-destination-encoding "iso-8859-1")
+
+(defvar enscript-print/enscript-input-encoding "latin1")
+
+(defun enscript-print/iconv-command-line ()
+  "Return the command line for running iconv for piping to enscript."
+  (enscript-print/shell-concat
+   "iconv"
+   "-f"
+   enscript-print/iconv-source-encoding
+   "-t"
+   enscript-print/iconv-destination-encoding))
+
+(defun enscript-print/enscript-command-line ()
+  "Return the command line for running enscript, piped from iconv."
   (enscript-print/shell-concat
    enscript-print-executable
+   (format "--encoding=%s" enscript-print/enscript-input-encoding)
+   (if enscript-print-escapes "--escapes")
    (if (not enscript-print-header) "--no-header")
    (if enscript-print-borders "--borders")
    (if enscript-print-media (format "--media=%s" enscript-print-media))
@@ -535,19 +564,28 @@ The font spec is used as the value of the `--font' and
              ((integerp enscript-print-line-numbers)
               (format "--line-numbers=%d" enscript-print-line-numbers))))))
 
+(defun enscript-print-command-line ()
+  "Return the command line for enscript printing."
+  (concat (enscript-print/iconv-command-line)
+          " | " (enscript-print/enscript-command-line)))
+
 ;;;###autoload
 (defun enscript-print-buffer ()
   "Print the contents of the buffer using enscript."
   (interactive)
-  (shell-command-on-region (point-min) (enscript-print/point-max)
-                           (enscript-print-command-line)))
+  (let ((coding-system-for-read enscript-print/coding-system-for-read)
+        (coding-system-for-write enscript-print/coding-system-for-write))
+    (shell-command-on-region (point-min) (enscript-print/point-max)
+                             (enscript-print-command-line))))
 
 ;;;###autoload
 (defun enscript-print-region ()
   "Print the contents of the region using enscript."
   (interactive)
-  (shell-command-on-region (point) (mark)
-                           (enscript-print-command-line)))
+  (let ((coding-system-for-read enscript-print/coding-system-for-read)
+        (coding-system-for-write enscript-print/coding-system-for-write))
+    (shell-command-on-region (point) (mark)
+                             (enscript-print-command-line))))
 
 (provide 'enscript-print)
 ;;; enscript-print.el ends here
