@@ -389,6 +389,52 @@ Leave nil to use the value of `printer-name'."
                  (const :tags "Question mark" 'questionmark)
                  (const :tags "Space" 'space)))
 
+(defcustom enscript-print-coding-system-for-read 'utf-8-unix
+  "Value for `coding-system-for-read' when piping to iconv and enscript."
+  :group 'enscript-print
+  :safe #'symbolp
+  :type '(symbol))
+
+(defcustom enscript-print-coding-system-for-write 'utf-8-unix
+  "Value for `coding-system-for-write' when piping to iconv and enscript."
+  :group 'enscript-print
+  :safe #'symbolp
+  :type '(symbol))
+
+(defcustom enscript-print-iconv-source-encoding "utf-8"
+  "Encoding to pass to iconv via its `-f' option for reading."
+  :group 'enscript-print
+  :safe #'stringp
+  :type '(string))
+
+(defcustom enscript-print-iconv-destination-encoding "iso-8859-1"
+  "Encoding to pass to iconv via its `-t' option for piping to enscript."
+  :group 'enscript-print
+  :safe #'stringp
+  :type '(string))
+
+(defcustom enscript-print-input-encoding "latin1"
+  "Encoding to pass to enscript via its `--encoding' option."
+  :group 'enscript-print
+  :safe #'stringp
+  :type '(string))
+
+(define-obsolete-variable-alias
+  'enscript-print/coding-system-for-read
+  'enscript-print-coding-system-for-read)
+(define-obsolete-variable-alias
+  'enscript-print/coding-system-for-write
+  'enscript-print-coding-system-for-write)
+(define-obsolete-variable-alias
+  'enscript-print/iconv-source-encoding
+  'enscript-print-iconv-source-encoding)
+(define-obsolete-variable-alias
+  'enscript-print/iconv-destination-encoding
+  'enscript-print-iconv-destination-encoding)
+(define-obsolete-variable-alias
+  'enscript-print/enscript-input-encoding
+  'enscript-print-input-encoding)
+  
 (defun enscript-print-printer-name ()
   "Return the default printer name used for enscript-print.
 
@@ -461,35 +507,20 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
-(defvar enscript-print/coding-system-for-read 'utf-8-unix
-  "Value for `coding-system-for-read' when piping to iconv and enscript.")
-
-(defvar enscript-print/coding-system-for-write 'utf-8-unix
-  "Value for `coding-system-for-write' when piping to iconv and enscript.")
-
-(defvar enscript-print/iconv-source-encoding "utf-8"
-  "Encoding to pass to iconv via its `-f' option for reading.")
-
-(defvar enscript-print/iconv-destination-encoding "iso-8859-1"
-  "Encoding to pass to iconv via its `-t' option for piping to enscript.")
-
-(defvar enscript-print/enscript-input-encoding "latin1"
-  "Encoding to pass to enscript via its `--encoding' option.")
-
 (defun enscript-print/iconv-command-line ()
   "Return the command line for running iconv for piping to enscript."
   (enscript-print/shell-concat
    "iconv"
    "-f"
-   enscript-print/iconv-source-encoding
+   enscript-print-iconv-source-encoding
    "-t"
-   enscript-print/iconv-destination-encoding))
+   enscript-print-iconv-destination-encoding))
 
 (defun enscript-print/enscript-command-line ()
   "Return the command line for running enscript, piped from iconv."
   (enscript-print/shell-concat
    enscript-print-executable
-   (format "--encoding=%s" enscript-print/enscript-input-encoding)
+   (format "--encoding=%s" enscript-print-input-encoding)
    (if enscript-print-escapes "--escapes")
    (if (not enscript-print-header) "--no-header")
    (if enscript-print-borders "--borders")
@@ -581,8 +612,8 @@ The font spec is used as the value of the `--font' and
 (defun enscript-print-buffer ()
   "Print the contents of the buffer using enscript."
   (interactive)
-  (let ((coding-system-for-read enscript-print/coding-system-for-read)
-        (coding-system-for-write enscript-print/coding-system-for-write))
+  (let ((coding-system-for-read enscript-print-coding-system-for-read)
+        (coding-system-for-write enscript-print-coding-system-for-write))
     (shell-command-on-region (point-min) (enscript-print/point-max)
                              (enscript-print-command-line))))
 
@@ -590,8 +621,8 @@ The font spec is used as the value of the `--font' and
 (defun enscript-print-region ()
   "Print the contents of the region using enscript."
   (interactive)
-  (let ((coding-system-for-read enscript-print/coding-system-for-read)
-        (coding-system-for-write enscript-print/coding-system-for-write))
+  (let ((coding-system-for-read enscript-print-coding-system-for-read)
+        (coding-system-for-write enscript-print-coding-system-for-write))
     (shell-command-on-region (point) (mark)
                              (enscript-print-command-line))))
 
