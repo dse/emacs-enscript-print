@@ -558,10 +558,10 @@ The font spec is used as the value of the `--font' and
        (if (numberp enscript-print-highlight-bars)
            (list (format "--highlight-bars=%d"
                          enscript-print-highlight-bars)
-                 (format "--highlight-bars-gray=%g"
+                 (format "--highlight-bar-gray=%g"
                          enscript-print-highlight-bars-gray-level))
          (list "--highlight-bars"
-               (format "--highlight-bars-gray=%g"
+               (format "--highlight-bar-gray=%g"
                        enscript-print-highlight-bars-gray-level))))
    (if enscript-print-number-of-copies
        (format "--copies=%d" enscript-print-number-of-copies))
