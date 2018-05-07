@@ -79,7 +79,11 @@
 
 ;; --media
 (defcustom enscript-print-media nil
-  "Select an output media (paper size)."
+  "Select an output media (paper size).
+
+Media for common paper sizes include `A4' and `Letter'.
+
+Run `enscript --list-media' for a list of all known output media."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (stringp x)))
@@ -507,14 +511,55 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
+(defvar enscript-print/coding-system-for-read 'utf-8-unix
+  "Value for `coding-system-for-read' when piping to iconv and enscript.
+
+You *should* never have to change this.")
+
+(defvar enscript-print/coding-system-for-write 'utf-8-unix
+  "Value for `coding-system-for-write' when piping to iconv and enscript.
+
+You *should* never have to change this.")
+
+(defvar enscript-print/iconv-source-encoding "utf-8"
+  "Encoding to pass to iconv via its `-f' option for reading.
+
+You *should* never have to change this.
+
+Run `iconv --list' to see a list of supported encodings.")
+
+(defvar enscript-print/iconv-destination-encoding "iso-8859-1"
+  "Encoding to pass to iconv via its `-t' option for piping to enscript.
+
+If NIL, defaults to the current locale.
+
+Corresponds to the value of
+`enscript-print/enscript-input-encoding', but does not
+necessarily have the same name.
+
+Run `iconv --list' to see a list of supported encodings as
+specified to the iconv program.")
+
+(defvar enscript-print/enscript-input-encoding "latin1"
+  "Encoding to pass to enscript via its `--encoding' option.
+
+If NIL, defaults to \"latin1\".
+
+Corresponds to the value of
+`enscript-print/iconv-destination-encoding', but does not
+necessarily have the same name.
+
+See the enscript man page for a list of supported encodings as
+specified to the enscript program.")
+
 (defun enscript-print/iconv-command-line ()
   "Return the command line for running iconv for piping to enscript."
   (enscript-print/shell-concat
    "iconv"
-   "-f"
-   enscript-print-iconv-source-encoding
-   "-t"
-   enscript-print-iconv-destination-encoding))
+   (if enscript-print/iconv-source-encoding
+       (list "-f" enscript-print/iconv-source-encoding))
+   (if enscript-print/iconv-destination-encoding
+       (list "-t" enscript-print/iconv-destination-encoding))))
 
 (defun enscript-print/enscript-command-line ()
   "Return the command line for running enscript, piped from iconv."
