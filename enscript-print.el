@@ -394,31 +394,57 @@ Leave nil to use the value of `printer-name'."
                  (const :tags "Space" 'space)))
 
 (defcustom enscript-print-coding-system-for-read 'utf-8-unix
-  "Value for `coding-system-for-read' when piping to iconv and enscript."
+  "Value for `coding-system-for-read' when piping to iconv and enscript.
+
+You *should* never have to change this."
   :group 'enscript-print
   :safe #'symbolp
   :type '(symbol))
 
 (defcustom enscript-print-coding-system-for-write 'utf-8-unix
-  "Value for `coding-system-for-write' when piping to iconv and enscript."
+  "Value for `coding-system-for-write' when piping to iconv and enscript.
+
+You *should* never have to change this."
   :group 'enscript-print
   :safe #'symbolp
   :type '(symbol))
 
 (defcustom enscript-print-iconv-source-encoding "utf-8"
-  "Encoding to pass to iconv via its `-f' option for reading."
+  "Encoding to pass to iconv via its `-f' option for reading.
+
+You *should* never have to change this.
+
+Run `iconv --list' to see a list of supported encodings."
   :group 'enscript-print
   :safe #'stringp
   :type '(string))
 
 (defcustom enscript-print-iconv-destination-encoding "iso-8859-1"
-  "Encoding to pass to iconv via its `-t' option for piping to enscript."
+  "Encoding to pass to iconv via its `-t' option for piping to enscript.
+
+If NIL, iconv defaults to the current locale.
+
+Corresponds to the value of
+`enscript-print-input-encoding', but does not
+necessarily have the same name.
+
+Run `iconv --list' to see a list of supported encodings as
+specified to the iconv program."
   :group 'enscript-print
   :safe #'stringp
   :type '(string))
 
 (defcustom enscript-print-input-encoding "latin1"
-  "Encoding to pass to enscript via its `--encoding' option."
+  "Encoding to pass to enscript via its `--encoding' option.
+
+If NIL, enscript defaults to \"latin1\".
+
+Corresponds to the value of
+`enscript-print-iconv-destination-encoding', but does not
+necessarily have the same name.
+
+See the enscript man page for a list of supported encodings as
+specified to the enscript program."
   :group 'enscript-print
   :safe #'stringp
   :type '(string))
@@ -511,55 +537,14 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
-(defvar enscript-print/coding-system-for-read 'utf-8-unix
-  "Value for `coding-system-for-read' when piping to iconv and enscript.
-
-You *should* never have to change this.")
-
-(defvar enscript-print/coding-system-for-write 'utf-8-unix
-  "Value for `coding-system-for-write' when piping to iconv and enscript.
-
-You *should* never have to change this.")
-
-(defvar enscript-print/iconv-source-encoding "utf-8"
-  "Encoding to pass to iconv via its `-f' option for reading.
-
-You *should* never have to change this.
-
-Run `iconv --list' to see a list of supported encodings.")
-
-(defvar enscript-print/iconv-destination-encoding "iso-8859-1"
-  "Encoding to pass to iconv via its `-t' option for piping to enscript.
-
-If NIL, defaults to the current locale.
-
-Corresponds to the value of
-`enscript-print/enscript-input-encoding', but does not
-necessarily have the same name.
-
-Run `iconv --list' to see a list of supported encodings as
-specified to the iconv program.")
-
-(defvar enscript-print/enscript-input-encoding "latin1"
-  "Encoding to pass to enscript via its `--encoding' option.
-
-If NIL, defaults to \"latin1\".
-
-Corresponds to the value of
-`enscript-print/iconv-destination-encoding', but does not
-necessarily have the same name.
-
-See the enscript man page for a list of supported encodings as
-specified to the enscript program.")
-
 (defun enscript-print/iconv-command-line ()
   "Return the command line for running iconv for piping to enscript."
   (enscript-print/shell-concat
    "iconv"
-   (if enscript-print/iconv-source-encoding
-       (list "-f" enscript-print/iconv-source-encoding))
-   (if enscript-print/iconv-destination-encoding
-       (list "-t" enscript-print/iconv-destination-encoding))))
+   (if enscript-print-iconv-source-encoding
+       (list "-f" enscript-print-iconv-source-encoding))
+   (if enscript-print-iconv-destination-encoding
+       (list "-t" enscript-print-iconv-destination-encoding))))
 
 (defun enscript-print/enscript-command-line ()
   "Return the command line for running enscript, piped from iconv."
