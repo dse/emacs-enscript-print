@@ -429,10 +429,41 @@ Corresponds to the value of
 necessarily have the same name.
 
 Run `iconv --list' to see a list of supported encodings as
-specified to the iconv program."
+specified to the iconv program.
+
+You need not append `//TRANSLIT' or `//IGNORE' to this variable;
+see `enscript-print-iconv-transliterate-nonrepresentable-characters'
+and `enscript-print-iconv-ignore-nonrepresentable-characters'."
   :group 'enscript-print
   :safe #'stringp
   :type '(string))
+
+(defcustom enscript-print-iconv-transliterate-nonrepresentable-characters t
+  "Translate nonrepresentable characters to approximations.
+
+If a character is not representable in
+`enscript-print-iconv-destination-encoding', it is converted to
+the closest matching character in that encoding, or to a
+replacement character, often a question mark.
+
+This appends //TRANSLIT to that variable's value when specifying
+it as the destination encoding for iconv."
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
+
+(defcustom enscript-print-iconv-ignore-nonrepresentable-characters t
+  "Silently ignore invalid sequences and nonrepresentable characters.
+
+If a character is not representable in
+`enscript-print-iconv-destination-encoding', or an invalid byte
+sequence is encountered, it is silently ignored.
+
+This appends //IGNORE to that variable's value when specifying
+it as the destination encoding for iconv."
+  :group 'enscript-print
+  :safe #'booleanp
+  :type '(boolean))
 
 (defcustom enscript-print-input-encoding "latin1"
   "Encoding to pass to enscript via its `--encoding' option.
@@ -537,6 +568,12 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
+(defun enscript-print/iconv-destination-encoding ()
+  "Return the full string specified as iconv's -t option."
+  (concat enscript-print-iconv-destination-encoding
+          (if enscript-print-iconv-transliterate-nonrepresentable-characters "//TRANSLIT" "")
+          (if enscript-print-iconv-ignore-nonrepresentable-characters        "//IGNORE"   "")))
+
 (defun enscript-print/iconv-command-line ()
   "Return the command line for running iconv for piping to enscript."
   (enscript-print/shell-concat
@@ -544,7 +581,7 @@ The font spec is used as the value of the `--font' and
    (if enscript-print-iconv-source-encoding
        (list "-f" enscript-print-iconv-source-encoding))
    (if enscript-print-iconv-destination-encoding
-       (list "-t" enscript-print-iconv-destination-encoding))))
+       (list "-t" (enscript-print/iconv-destination-encoding)))))
 
 (defun enscript-print/enscript-command-line ()
   "Return the command line for running enscript, piped from iconv."
