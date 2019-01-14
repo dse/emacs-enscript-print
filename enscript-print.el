@@ -568,6 +568,23 @@ The font spec is used as the value of the `--font' and
                               (format "/%g" font-height) ""))
                 ""))))
 
+(defun enscript-print/buffer-name-to-file-name (buffer-name)
+  "Convert BUFFER-NAME to a filename without extension.
+
+Removes trailing and leading non-alphanumeric characters, and
+replaces each remaining contiguous sequence of non-alphanumeric
+chsracters with a hyphen.
+
+Returns NIL if BUFFER-NAME is not a string, or if it contains
+no alphanumeric characters."
+  (if (and buffer-name (stringp buffer-name))
+      (let ((result buffer-name))
+        (setq result (replace-regexp-in-string "\\`[^[:alnum:]]+" ""  result))
+        (setq result (replace-regexp-in-string "[^[:alnum:]]+\\'" ""  result))
+        (setq result (replace-regexp-in-string "[^[:alnum:]]+"    "-" result))
+        (if (equal result "") nil result))
+    nil))
+
 (defun enscript-print/iconv-destination-encoding ()
   "Return the full string specified as iconv's -t option."
   (concat enscript-print-iconv-destination-encoding
@@ -583,10 +600,21 @@ The font spec is used as the value of the `--font' and
    (if enscript-print-iconv-destination-encoding
        (list "-t" (enscript-print/iconv-destination-encoding)))))
 
-(defun enscript-print/enscript-command-line ()
-  "Return the command line for running enscript, piped from iconv."
+(defun enscript-print/enscript-command-line (&optional print-to-file)
+  "Return the command line for running enscript, piped from iconv.
+
+Optional argument PRINT-TO-FILE, if non-nil, instructs enscript to
+output to a PostScript file instead of printing.  The name of the
+PostScript file is the buffer's filename, with `.ps' appended."
   (enscript-print/shell-concat
    enscript-print-executable
+   (if print-to-file
+       (format "--output=%s"
+               (cond ((buffer-file-name) (concat (buffer-file-name) ".ps"))
+                     ((buffer-name)
+                      (concat (enscript-print/buffer-name-to-file-name
+                               (buffer-name)) ".ps"))
+                     (t "emacs-enscript.ps"))))
    (format "--encoding=%s" enscript-print-input-encoding)
    (if enscript-print-escapes "--escapes")
    (if (not enscript-print-header) "--no-header")
@@ -670,28 +698,39 @@ The font spec is used as the value of the `--font' and
              ((integerp enscript-print-line-numbers)
               (format "--line-numbers=%d" enscript-print-line-numbers))))))
 
-(defun enscript-print-command-line ()
-  "Return the command line for enscript printing."
+(defun enscript-print-command-line (&optional print-to-file)
+  "Return the command line for enscript printing.
+
+Optional argument PRINT-TO-FILE has the same meaning as in the
+function `enscript-command-line'."
   (concat (enscript-print/iconv-command-line)
-          " | " (enscript-print/enscript-command-line)))
+          " | " (enscript-print/enscript-command-line print-to-file)))
 
 ;;;###autoload
-(defun enscript-print-buffer ()
-  "Print the contents of the buffer using enscript."
-  (interactive)
+(defun enscript-print-buffer (&optional arg)
+  "Print the contents of the buffer using enscript.
+
+Supply a negative optional argument ARG to print to a PostScript file."
+  (interactive "p")
   (let ((coding-system-for-read enscript-print-coding-system-for-read)
-        (coding-system-for-write enscript-print-coding-system-for-write))
+        (coding-system-for-write enscript-print-coding-system-for-write)
+        (print-to-file (and (numberp arg) (< arg 0))))
     (shell-command-on-region (point-min) (enscript-print/point-max)
-                             (enscript-print-command-line))))
+                             (enscript-print-command-line
+                              print-to-file))))
 
 ;;;###autoload
-(defun enscript-print-region ()
-  "Print the contents of the region using enscript."
-  (interactive)
+(defun enscript-print-region (&optional arg)
+  "Print the contents of the region using enscript.
+
+Supply a negative optional argument ARG to print to a PostScript file."
+  (interactive "p")
   (let ((coding-system-for-read enscript-print-coding-system-for-read)
-        (coding-system-for-write enscript-print-coding-system-for-write))
+        (coding-system-for-write enscript-print-coding-system-for-write)
+        (print-to-file (and (numberp arg) (< arg 0))))
     (shell-command-on-region (point) (mark)
-                             (enscript-print-command-line))))
+                             (enscript-print-command-line
+                              print-to-file))))
 
 (provide 'enscript-print)
 ;;; enscript-print.el ends here
