@@ -600,21 +600,24 @@ no alphanumeric characters."
    (if enscript-print-iconv-destination-encoding
        (list "-t" (enscript-print/iconv-destination-encoding)))))
 
-(defun enscript-print/enscript-command-line (&optional print-to-file)
+(defun enscript-print/enscript-command-line (&optional print-to-postscript-file)
   "Return the command line for running enscript, piped from iconv.
 
-Optional argument PRINT-TO-FILE, if non-nil, instructs enscript to
-output to a PostScript file instead of printing.  The name of the
-PostScript file is the buffer's filename, with `.ps' appended."
+Optional argument PRINT-TO-POSTSCRIPT-FILE, if non-nil, instructs
+enscript to output to a PostScript file instead of printing.
+
+The name of the PostScript file is the buffer's filename, with
+`.ps' appended.
+
+If PRINT-TO-POSTSCRIPT-FILE is equal to the string \"-\", command
+sends PostScript to standard output."
   (enscript-print/shell-concat
    enscript-print-executable
-   (if print-to-file
-       (format "--output=%s"
-               (cond ((buffer-file-name) (concat (buffer-file-name) ".ps"))
-                     ((buffer-name)
-                      (concat (enscript-print/buffer-name-to-file-name
-                               (buffer-name)) ".ps"))
-                     (t "emacs-enscript.ps"))))
+   (if print-to-postscript-file
+       (if (equal print-to-postscript-file "-")
+           "--output=-"
+         (format "--output=%s"
+                 (enscript-print/postscript-file-name-for-buffer))))
    (format "--encoding=%s" enscript-print-input-encoding)
    (if enscript-print-escapes "--escapes")
    (if (not enscript-print-header) "--no-header")
@@ -698,39 +701,140 @@ PostScript file is the buffer's filename, with `.ps' appended."
              ((integerp enscript-print-line-numbers)
               (format "--line-numbers=%d" enscript-print-line-numbers))))))
 
-(defun enscript-print-command-line (&optional print-to-file)
+(defun enscript-print/postscript-file-name-for-buffer (&optional ext)
+  "Return PostScript file name for buffer.  Optional EXT overrides \".ps\"."
+  (let ((ext (or ext ".ps")))
+    (cond ((buffer-file-name) (concat (buffer-file-name) ext))
+          ((buffer-name)
+           (concat (enscript-print/buffer-name-to-file-name
+                    (buffer-name)) ext))
+          (t (concat "emacs-enscript" ext)))))
+
+(defun enscript-print/pdf-file-name-for-buffer ()
+  "Return PDF file name for buffer."
+  (enscript-print/postscript-file-name-for-buffer ".pdf"))
+
+;; return X if X and X is not "-"
+(defun enscript-print/but-not-equal (a b)
+  "Convenience function to return A if A is equal to B."
+  (cond ((equal a b) nil)
+        (t a)))
+
+(defun enscript-print/ps2pdf-command-line (postscript-file-name pdf-file-name)
+  "Return command to convert PostScript to PDF using ps2pdf.
+
+String arguments POSTSCRIPT-FILE-NAME and PDF-FILE-NAME specify
+the input and output filenames.
+
+If POSTSCRIPT-FILE-NAME is NIL or \"-\", command reads from
+standard input.
+
+If ps2pdf utility is not found, return NIL.
+
+See also `enscript-print/pstopdf-command-line'."
+  (let ((ps2pdf-location (executable-find "ps2pdf")))
+    (if ps2pdf-location
+        (enscript-print/shell-concat ps2pdf-location
+                                     (or (enscript-print/but-not-equal
+                                          postscript-file-name "-")
+                                         "-")
+                                     pdf-file-name))))
+
+(defun enscript-print/pstopdf-command-line (postscript-file-name pdf-file-name)
+  "Return command to convert PostScript to PDF using pstopdf.
+
+String arguments POSTSCRIPT-FILE-NAME and PDF-FILE-NAME specify
+the input and output filenames.
+
+If POSTSCRIPT-FILE-NAME is NIL or \"-\", command reads from
+standard input.
+
+If pstopdf utility is not found, return NIL.
+
+See also `enscript-print/ps2pdf-command-line'."
+  (let ((pstopdf-location (executable-find "pstopdf")))
+    (if pstopdf-location
+        (enscript-print/shell-concat pstopdf-location
+                                     (or (enscript-print/but-not-equal
+                                          postscript-file-name "-")
+                                         nil)
+                                     "-o" pdf-file-name))))
+
+(defun enscript-print/postscript-to-pdf-command-line (postscript-file-name pdf-file-name)
+  "Return command to convert POSTSCRIPT-FILE-NAME to PDF-FILE-NAME.
+
+If POSTSCRIPT-FILE-NAME is NIL or \"-\", command reads from
+standard input.
+
+If ps2pdf is found, command will use that utility.
+Otherwise, if pstopdf is found, command will use that utility.
+Otherwise, this function throws an error."
+  (or (enscript-print/ps2pdf-command-line postscript-file-name pdf-file-name)
+      (enscript-print/pstopdf-command-line postscript-file-name pdf-file-name)
+      (error "%s" "No `ps2pdf' or `pstopdf' utility found")))
+
+(defun enscript-print-command-line (&optional print-to-postscript-file
+                                              print-to-pdf-file)
   "Return the command line for enscript printing.
 
-Optional argument PRINT-TO-FILE has the same meaning as in the
-function `enscript-command-line'."
-  (concat (enscript-print/iconv-command-line)
-          " | " (enscript-print/enscript-command-line print-to-file)))
+Optional argument PRINT-TO-POSTSCRIPT-FILE has the same meaning
+as in the function `enscript-command-line'.
+
+Optional argument PRINT-TO-PDF-FILE, if non-nil, instructs us to
+output a .pdf file."
+  (if print-to-pdf-file
+      (if print-to-postscript-file
+          (format "%s | %s && %s"
+                  (enscript-print/iconv-command-line)
+                  (enscript-print/enscript-command-line
+                   print-to-postscript-file)
+                  (enscript-print/postscript-to-pdf-command-line
+                   (enscript-print/postscript-file-name-for-buffer)
+                   (enscript-print/pdf-file-name-for-buffer)))
+        (format "%s | %s | %s"
+                (enscript-print/iconv-command-line)
+                (enscript-print/enscript-command-line "-")
+                (enscript-print/postscript-to-pdf-command-line
+                 "-"
+                 (enscript-print/pdf-file-name-for-buffer))))
+    (format "%s | %s"
+            (enscript-print/iconv-command-line)
+            (enscript-print/enscript-command-line
+             print-to-postscript-file))))
 
 ;;;###autoload
 (defun enscript-print-buffer (&optional arg)
   "Print the contents of the buffer using enscript.
 
-Supply a negative optional argument ARG to print to a PostScript file."
+Supply a negative optional argument -1 to ARG to output a
+PostScript file.
+
+Supply negative argument -2 to output a PDF file."
   (interactive "p")
   (let ((coding-system-for-read enscript-print-coding-system-for-read)
         (coding-system-for-write enscript-print-coding-system-for-write)
-        (print-to-file (and (numberp arg) (< arg 0))))
+        (print-to-postscript-file (and (numberp arg) (or (= arg -1) (= arg -3))))
+        (print-to-pdf-file        (and (numberp arg) (or (= arg -2) (= arg -3)))))
     (shell-command-on-region (point-min) (enscript-print/point-max)
                              (enscript-print-command-line
-                              print-to-file))))
+                              print-to-postscript-file
+                              print-to-pdf-file))))
 
 ;;;###autoload
 (defun enscript-print-region (&optional arg)
   "Print the contents of the region using enscript.
 
-Supply a negative optional argument ARG to print to a PostScript file."
+Supply a negative optional argument -1 to ARG to output a
+PostScript file.
+
+Supply negative argument -2 to output a PDF file."
   (interactive "p")
   (let ((coding-system-for-read enscript-print-coding-system-for-read)
         (coding-system-for-write enscript-print-coding-system-for-write)
-        (print-to-file (and (numberp arg) (< arg 0))))
+        (print-to-postscript-file (and (numberp arg) (< arg 0))))
     (shell-command-on-region (point) (mark)
                              (enscript-print-command-line
-                              print-to-file))))
+                              print-to-postscript-file))))
 
 (provide 'enscript-print)
 ;;; enscript-print.el ends here
