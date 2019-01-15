@@ -807,9 +807,11 @@ output a .pdf file."
   "Print the contents of the buffer using enscript.
 
 Supply a negative optional argument -1 to ARG to output a
-PostScript file.
+PostScript file.  (M-- M-x ...)
 
-Supply negative argument -2 to output a PDF file."
+Supply negative argument -2 to output a PDF file.  (M-- M-2 M-x ...)
+
+Supply negative argument -3 to output PostScript and PDF files."
   (interactive "p")
   (let ((coding-system-for-read enscript-print-coding-system-for-read)
         (coding-system-for-write enscript-print-coding-system-for-write)
@@ -825,9 +827,11 @@ Supply negative argument -2 to output a PDF file."
   "Print the contents of the region using enscript.
 
 Supply a negative optional argument -1 to ARG to output a
-PostScript file.
+PostScript file.  (M-- M-x ...)
 
-Supply negative argument -2 to output a PDF file."
+Supply negative argument -2 to output a PDF file.  (M-- M-2 M-x ...)
+
+Supply negative argument -3 to output PostScript and PDF files."
   (interactive "p")
   (let ((coding-system-for-read enscript-print-coding-system-for-read)
         (coding-system-for-write enscript-print-coding-system-for-write)
