@@ -105,7 +105,7 @@ If value is nil, either \"Courier\" or whatever is specified in
 
 ;; --font=<font>
 (defcustom enscript-print-font-size nil
-  "Specify a font size for the body text.
+  "Specify a font size for the body text, in PostScript points.
 
 If value is nil, either 10 points or whatever is specified in
 ~/.enscriptrc is used.
@@ -128,7 +128,7 @@ font's width and height."
 
 ;; --font=<font>
 (defcustom enscript-print-font-height nil
-  "Specify a font height for the body text.
+  "Specify a font **height** for the body text, in PostScript points.
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
@@ -153,7 +153,7 @@ If value is nil, either \"Courier\" or whatever is specified in
 
 ;; --header-font=<font>
 (defcustom enscript-print-header-font-size nil
-  "Specify a font size for the header.
+  "Specify a font size for the header, in PostScript points.
 
 If value is nil, either 10 points or whatever is specified in
 ~/.enscriptrc is used.
@@ -176,7 +176,7 @@ font's width and height."
 
 ;; --header-font=<font>
 (defcustom enscript-print-header-font-height nil
-  "Specify a font height for the header.
+  "Specify a font **height** for the header, in PostScript points.
 
 If the value is nil, maintain the font's original aspect ratio."
   :group 'enscript-print
@@ -225,7 +225,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; --baselineskip=<num>
 (defcustom enscript-print-baseline-skip nil
-  "Specify the baseline skip in PostScript points."
+  "Specify the baseline skip, in PostScript points."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (and (numberp x)
@@ -241,7 +241,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; --tabsize=<num>
 (defcustom enscript-print-tab-size nil
-  "Set the tabulator size."
+  "Set the tabulator size, in number of characters."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (and (integerp x)
@@ -271,7 +271,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-left-margin nil
-  "Left page marginal."
+  "Left page marginal, in PostScript points."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (numberp x)))
@@ -280,7 +280,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-right-margin nil
-  "Right page marginal."
+  "Right page marginal, in PostScript points."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (numberp x)))
@@ -289,7 +289,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-top-margin nil
-  "Top page marginal."
+  "Top page marginal, in PostScript points."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (numberp x)))
@@ -298,7 +298,7 @@ If the value is nil, maintain the font's original aspect ratio."
 
 ;; --margins=<left>:<right>:<top>:<bottom>
 (defcustom enscript-print-bottom-margin nil
-  "Bottom page marginal."
+  "Bottom page marginal, in PostScript points."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (numberp x)))
@@ -382,7 +382,7 @@ Leave nil to use the value of `printer-name'."
 
 ;; --non-printable-format=<format>
 (defcustom enscript-print-non-printable-format nil
-  "Specify how the non-printable characterss are printed."
+  "Specify how non-printable characters are printed."
   :group 'enscript-print
   :safe #'(lambda (x) (or (not x)
                           (eq x 'caret)
