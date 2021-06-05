@@ -560,13 +560,8 @@ return `(point-max)'."
 
 The font spec is used as the value of the `--font' and
 `--header-font' options."
-  (if (or font-name font-size)
-      (concat (or font-name "Courier")
-              (if font-size
-                  (concat (format "@%g" font-size)
-                          (if font-height
-                              (format "/%g" font-height) ""))
-                ""))))
+  (concat (format "%s@%g" (or font-name "Courier") (or font-size 10))
+          (if font-height (format "/%g" font-height) "")))
 
 (defun enscript-print/buffer-name-to-file-name (buffer-name)
   "Convert BUFFER-NAME to a filename without extension.
